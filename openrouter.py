@@ -1,11 +1,33 @@
+import os
 import asyncclick as click
 import pandas as pd
 from tabulate import tabulate
 from tenacity import retry, stop_after_attempt, wait_exponential
-from together import AsyncTogether
 from tqdm.asyncio import tqdm_asyncio
 
+from openai import AsyncOpenAI
+
 from utils import print_results
+
+client = AsyncOpenAI(
+  base_url="https://openrouter.ai/api/v1",
+  api_key=os.getenv("OPENROUTER_API_KEY"),
+)
+
+completion = client.chat.completions.create(
+  extra_headers={
+    "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
+    "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
+  },
+  model="openai/gpt-3.5-turbo",
+  messages=[
+    {
+      "role": "user",
+      "content": "What is the meaning of life?"
+    }
+  ]
+)
+print(completion.choices[0].message.content)
 
 
 @click.group()
@@ -15,7 +37,6 @@ def cli():
 
 @cli.command("list")
 async def list_models():
-    client = AsyncTogether()
     models = await client.models.list()
     model_df = pd.DataFrame.from_records([dict(m) for m in models])
     chat_models = model_df[model_df["type"] == "chat"]
@@ -26,7 +47,6 @@ async def list_models():
 @click.argument("message")
 @click.option("--max-tokens", default=200)
 async def run(message: str, max_tokens: int):
-    client = AsyncTogether()
     results = await run_models(client, message, max_tokens)
     print_results(results)
 

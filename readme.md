@@ -6,7 +6,7 @@ env setup
 cd api_experiments
 venv-prepare
 load-DotEnv
-pip install together pandas tabulate asyncclick tenacity tqdm
+pip install together pandas tabulate asyncclick tenacity tqdm openai
 ```
 
 then
