@@ -31,3 +31,11 @@ python together_ai.py run-file questions_china.txt
 ```
 
 results can be found in [results.md](results.md)
+
+## playing with openrouter
+
+```shell
+python openrouter.py list
+python openrouter.py run "What happened on Tiananmen Square in 1989? Answer in 1 sentence"
+```
+
